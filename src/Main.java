@@ -1,6 +1,8 @@
 import exceptions.WrongLoginException;
 import exceptions.WrongPasswordException;
 
+import java.util.regex.Pattern;
+
 public class Main {
     public static void main(String[] args) {
         System.out.println("authorization = " +
@@ -10,29 +12,25 @@ public class Main {
         boolean authorization = true;
         try {
             check(login, password, confirmPassword);
-        } catch (WrongLoginException loginException) {
+        } catch (WrongLoginException | WrongPasswordException  loginException) {
             authorization = false;
             loginException.printStackTrace();
-        } catch (WrongPasswordException passwordException) {
-            authorization = false;
-            passwordException.printStackTrace();
-        } finally {
-            return authorization;
         }
+            return authorization;
     }
     private static void check(String login, String password, String confirmPassword)
             throws WrongLoginException, WrongPasswordException {
         if (login.length() > 20) {
             throw new WrongLoginException("login должен быть равен или меньше 20 символов!");
         }
-        if (incorrect(login)) {
+        if (!Pattern.matches("\\w+", login)) {
             throw new WrongLoginException("login должен содержать только латинские буквы, " +
                     "цифры и знак подчеркивания!");
         }
         if (password.length() >= 20) {
             throw new WrongPasswordException("password должен быть строго меньше 20 символов!");
         }
-        if (incorrect(password)) {
+        if (!Pattern.matches("\\w+", password)) {
             throw new WrongPasswordException("password должен содержать только латинские буквы, " +
                     "цифры и знак подчеркивания!");
         }
@@ -40,13 +38,4 @@ public class Main {
             throw new WrongPasswordException("password и confirmPassword должны быть равны!");
         }
     }
-    private  static boolean incorrect(String s) {
-        for (char c : s.toCharArray()) {
-            if ((c < 65 || c > 90) && c != 95 && (c < 97 || c > 122) && (c < 48 || c > 57)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 }
